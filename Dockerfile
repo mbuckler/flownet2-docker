@@ -16,8 +16,10 @@ VOLUME "/input-output"
 ## 2. Download and install CUDA driver
 ## 3. Download and build DispNet/FlowNet Caffe distro
 ## 4. Remove some now unused packages and clean up (for a smaller image)
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends \
+RUN apt-get update
+
+#RUN apt-get install -y --no-install-recommends \
+RUN apt-get install -y \
         module-init-tools \
         build-essential \
         ca-certificates \
@@ -39,21 +41,21 @@ RUN apt-get update && \
         python-scipy \
         python-protobuf \
         python-pillow \
-        python-skimage && \
-\
-    git clone https://github.com/lmb-freiburg/flownet2 && \
+        python-skimage
+
+RUN git clone https://github.com/lmb-freiburg/flownet2 && \
     cp ./FN2_Makefile.config ./flownet2/Makefile.config && \
     cp ./FN2_run-flownet-docker.py ./flownet2/scripts/run-flownet-docker.py && \
     cd flownet2 && \
     rm -rf .git && \
-    cd models && \
-    bash download-models.sh && \
-    rm flownet2-models.tar.gz && \
-    cd .. && \
+#    cd models && \
+#    bash download-models.sh && \
+#    rm flownet2-models.tar.gz && \
+#    cd .. && \
     make -j`nproc` && \
-    make -j`nproc` pycaffe && \
-\
-    apt-get remove -y \
+    make -j`nproc` pycaffe
+
+RUN apt-get remove -y \
         module-init-tools \
         build-essential \
         ca-certificates \
