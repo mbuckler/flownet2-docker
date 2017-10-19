@@ -1,3 +1,9 @@
+To evaluate number of operations used by FlowNet 2.0:
+
+nvidia-docker run -v ${PWD}:/input-output:rw -v /data/models:/flownet2/flownet2/models -v /data:/data -v /home:/home -w /flownet2/flownet2/scripts -it flownet2 /bin/bash -c "cd ..; source set-env.sh; cd -; cp /input-output/get_num_flownet_ops.py .; python get_num_flownet_ops.py --gpu 0 /data/models/FlowNet2-s/FlowNet2-s_weights.caffemodel /data/models/FlowNet2-s/FlowNet2-s_deploy.prototxt.template /input-output/data/keyframe.jpg /input-output/data/infframe.jpg /input-output/out.flo"
+
+## ORIGINAL README BELOW
+
 # FlowNet 2.0 Docker Image
 
 [![License](https://img.shields.io/badge/license-GPLv3-blue.svg)](LICENSE)
