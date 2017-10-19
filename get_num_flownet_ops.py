@@ -69,39 +69,44 @@ input_dict = {}
 for blob_idx in range(num_blobs):
     input_dict[net.inputs[blob_idx]] = input_data[blob_idx]
 
-#
-# There is some non-deterministic nan-bug in caffe
-# it seems to be a race-condition 
-#
-print('Network forward pass using %s.' % args.caffemodel)
 
 net.forward(**input_dict)
 
-for name in net.blobs:
-    blob = net.blobs[name]
-    has_nan = np.isnan(blob.data[...]).any()
+total_macs = 0
+for name, layer in zip(net._layer_names, net.layers):
+    if ((layer.type == 'Convolution') or (layer.type == 'Deconvolution')):
+        print(name)
+        top_name = net.top_names[name][0]
+        top_blob = net.blobs[top_name]
+        weights  = net.params[name][0]
 
-# Compute number of MAC operations for convolution
+        top_blob_shape = top_blob.shape
+        layer_height   = top_blob_shape[2]
+        layer_width    = top_blob_shape[3]
+        print(layer_width)
+        print(layer_height)
 
-# Compute number of MAC operations for deconvolution
+        weight_shape  = weights.shape
+        in_chan       = weight_shape[0]
+        out_chan      = weight_shape[1]
+        kernel_height = weight_shape[2]
+        kernel_width  = weight_shape[3]
+        print(in_chan)
+        print(out_chan)
+        print(kernel_height)
+        print(kernel_width)
 
-# Compute number of RELU operations
+        # Compute number of multiply accumulate operations
+        num_outputs      = layer_width * layer_height * out_chan
+        num_macs_per_out = in_chan * kernel_height * kernel_width
+        num_layer_macs   = num_outputs * num_macs_per_out
+        print(num_layer_macs)
+
+        total_macs      += num_layer_macs
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+print('===========')
+print('Total MACs: '+str(total_macs))
 
 
 
